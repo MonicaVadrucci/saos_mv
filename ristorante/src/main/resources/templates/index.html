@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+
+        .left-panel {
+            background: #f4c58f;
+            width: 50%;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            padding: 20px; 
+        }     
+
+        .right-panel {
+            width: 50%;
+            background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .content {
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+
+        button {
+            background-color:black;
+            border: 2px solid #f4c58f; 
+            color: #f4c58f;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px; 
+            cursor: pointer;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3); 
+            font-family: "Permanent Marker", cursive; /* Applica il font Permanent Marker ai pulsanti */
+        }
+
+        button:hover {
+            background-color: green;
+        }
+
+        h1 {
+            font-size: 23px;
+            text-transform: uppercase; 
+            margin-bottom: 10px;
+            font-family: "Permanent Marker", cursive; 
+        }
+
+        p{
+            font-family: "Permanent Marker", cursive;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="content">
+            <h1>Welcome to the Restaurant Management System</h1>
+            <p>GO TO ADMIN DASHBOARD</p>
+            <button onclick="window.location.href='/admin/dashboard'"><i class="fab fa-google"></i> Continue with Google</button>
+            <button onclick=""><i class="fab fa-yahoo"></i> Continue with Yahoo!</button>
+        </div>
+    </div>
+    <div class="right-panel"></div>
+</body>
+</html>

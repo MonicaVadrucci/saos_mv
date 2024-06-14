@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 100vh;
+        }
+
+        .left-panel {
+            background: #f4c58f;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .right-panel {
+            width: 50%;
+            background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+        }
+
+        h1 {
+            font-size: 23px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        button {
+            background-color: black;
+            border: 2px solid #f4c58f;
+            color: #f4c58f;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 10px;
+            width: 250px;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.3);
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        button:hover {
+            background-color: green;
+        }
+
+        .calendar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        .calendar-header button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        .calendar-day {
+            padding: 5px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            font-size: 12px;
+            font-family: 'Permanent Marker', cursive;
+            cursor: pointer; /* Aggiunto per rendere il giorno cliccabile */
+        }
+
+        .calendar-day:hover {
+            background-color: #f4c58f; /* Cambia colore al passaggio del mouse */
+        }
+
+        .calendar-day.selected {
+            background-color: #f4c58f; /* Cambia colore del giorno selezionato */
+        }
+
+        .calendar-day-header {
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            font-size: 12px;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        .booking-section {
+            margin-top: 20px;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        .booking-details {
+            margin-top: 20px;
+            font-family: 'Permanent Marker', cursive;
+        }
+
+        .booking-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .booking-details li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <h1>Admin Dashboard</h1>
+        <div id="calendar" class="calendar"></div>
+        <div class="booking-details" style="display: none;">
+            <h2>Prenotazioni:</h2>
+            <ul id="bookingList"></ul>
+        </div>
+        <button onclick="window.location.href='/'"><i class="fab fa-google"></i> -> LOGOUT </button>
+
+    </div>
+    <div class="right-panel"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const bookingDetails = document.querySelector('.booking-details');
+            const bookingList = document.getElementById('bookingList');
+
+            let selectedDates = [];
+
+            function generateCalendar(month, year) {
+                const calendarHeader = `
+                    <div class="calendar-header">
+                        <button id="prevMonth">&lt;</button>
+                        <div>${monthNames[month]} ${year}</div>
+                        <button id="nextMonth">&gt;</button>
+                    </div>
+                `;
+
+                const calendarGridHeader = `
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Sun</div>
+                        <div class="calendar-day-header">Mon</div>
+                        <div class="calendar-day-header">Tue</div>
+                        <div class="calendar-day-header">Wed</div>
+                        <div class="calendar-day-header">Thu</div>
+                        <div class="calendar-day-header">Fri</div>
+                        <div class="calendar-day-header">Sat</div>
+                    </div>
+                `;
+
+                const calendarGridDays = generateDays(month, year);
+                calendarEl.innerHTML = calendarHeader + calendarGridHeader + calendarGridDays;
+
+                document.getElementById('prevMonth').addEventListener('click', function() {
+                    changeMonth(-1);
+                });
+
+                document.getElementById('nextMonth').addEventListener('click', function() {
+                    changeMonth(1);
+                });
+
+                const calendarDays = document.querySelectorAll('.calendar-day');
+
+                calendarDays.forEach(function(day) {
+                    day.addEventListener('click', function() {
+                        const surname = prompt('Inserisci il cognome per la prenotazione:');
+                        const people = parseInt(prompt('Inserisci il numero di persone:'));
+                        const time = prompt('Inserisci l\'ora per la prenotazione (hh):');
+
+                        if (!isNaN(people) && time !== null) {
+                            const date = new Date(year, month, parseInt(this.textContent),
+parseInt(time));
+                            const booking = { date: date.getTime(), surname: surname, people: people };
+
+                            if (!selectedDates.some(booking => booking.date === date.getTime())) {
+                                selectedDates.push(booking);
+                                this.classList.add('selected');
+                            } else {
+                                selectedDates = selectedDates.filter(d => d.date !== date.getTime());
+                                this.classList.remove('selected');
+                            }
+
+                            updateBookingDetails();
+                        } else {
+                            alert('Inserisci un numero valido per il numero di persone e un\'ora valida.');
+                        }
+                    });
+                });
+            }
+
+            function generateDays(month, year) {
+                const firstDay = new Date(year, month, 1).getDay();
+                const lastDate = new Date(year, month + 1, 0).getDate();
+                let daysHTML = '<div class="calendar-grid">';
+
+                for (let i = 0; i < firstDay; i++) {
+                    daysHTML += '<div class="calendar-day"></div>';
+                }
+
+                for (let date = 1; date <= lastDate; date++) {
+                    daysHTML += `<div class="calendar-day">${date}</div>`;
+                }
+
+                daysHTML += '</div>';
+                return daysHTML;
+            }
+
+            function changeMonth(offset) {
+                currentMonth += offset;
+
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+
+                generateCalendar(currentMonth, currentYear);
+            }
+
+            function updateBookingDetails() {
+                const bookingHTML = selectedDates.map(booking => {
+                    const date = new Date(booking.date);
+                    const dateString = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()} - ${date.getHours()}`;
+                    return `<li>Date: ${dateString}, Surname: ${booking.surname}, People: ${booking.people}</li>`;
+                }).join('');
+
+                bookingList.innerHTML = bookingHTML;
+                if (selectedDates.length > 0) {
+                    bookingDetails.style.display = 'block';
+                } else {
+                    bookingDetails.style.display = 'none';
+                }
+            }
+
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+
+            generateCalendar(currentMonth, currentYear);
+        });
+    </script>
+</body>
+</html>
+
+
+
+
